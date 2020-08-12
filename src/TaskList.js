@@ -1,7 +1,10 @@
+import {html, render} from 'https://unpkg.com/lit-html?module';
+
 export default class TaskList extends HTMLElement {
   
   constructor(){
     super();
+    this.attachShadow({mode: 'open'});
     this.tasks;
   }
 
@@ -12,17 +15,16 @@ export default class TaskList extends HTMLElement {
   }
 
   template(){
-    return `
+    return html`
+      <style> @import "https://cdnjs.cloudflare.com/ajax/libs/wingcss/0.1.8/wing.min.css"; </style>
       <h3>Task list</h3>
-       ${this.tasks.map(function(element) {
-        return `
+      ${this.tasks.map(element => html`
         <div class="row" >
-        <div class="col-1"><input type="checkbox" value="${element.id}"/></div>
+        <div class="col-1"><input type="checkbox" @click=${()=>{this.deleteTask(element.id)}} value="${element.id}"/></div>
         <div class="col-8">${element.description}</div>
         </div>
-        `;
-      }).join("")} 
-      `
+      `)}
+    `;
   }
 
   deleteTask(id){
@@ -44,11 +46,11 @@ export default class TaskList extends HTMLElement {
     this.tasks = await result.json();
     console.log(this.tasks);
     
-    this.innerHTML = this.template();
+    render(this.template(), this.shadowRoot, {eventContext: this});
     
-    this.querySelectorAll("input[type=checkbox]").forEach(cb => {
-      cb.addEventListener("click", e => this.deleteTask(cb.value));;
-    })
+    //this.querySelectorAll("input[type=checkbox]").forEach(cb => {
+    // cb.addEventListener("click", e => this.deleteTask(cb.value));;
+    //})
   }
 }
 

@@ -1,27 +1,35 @@
+import {html, render} from 'https://unpkg.com/lit-html?module';
+
 export default class NewTask extends HTMLElement {
-  connectedCallback() {
-    console.log("Connect");
-    this.innerHTML = `
-    <h3>Add a task</h3>
-    <form id="task-form">
-      <div class="row">
-        <div class="col-6"><input type="text" id="description" placeholder="Description" size="60"/>
-        </div><div><input type="submit" value="Save"/></div>
-      </div>
-    </form>
-    `;
-    document.getElementById("task-form").onsubmit=this.addTask;
+  
+  constructor(){
+    super();
+    this.attachShadow({mode: 'open'});
   }
 
-  handleClick(){
-    console.log("Click");
+  connectedCallback() {
+    console.log("Connect");
+    this.innerHTML = render(this.template(), this.shadowRoot, {eventContext: this});
+  }
+
+  template(){
+     return html`
+       <style> @import "https://cdnjs.cloudflare.com/ajax/libs/wingcss/0.1.8/wing.min.css"; </style>
+       <h3>Add a task</h3>
+       <form >
+          <div class="row">
+          <div class="col-6"><input type="text" id="description" placeholder="Description" size="60"/>
+          </div><div><button @click=${() => {this.addTask()}}>Save</button></div>
+          </div>
+       </form>
+     `
   }
 
   addTask(){
     console.log("Starting addTask");
     const url = 'http://localhost:8088//todo/tasks';
 
-    let description = document.getElementById("description").value;
+    let description = this.shadowRoot.getElementById("description").value;
     console.log(`Button clicked with ${description}...`);
     console.log(JSON.stringify({
       description
