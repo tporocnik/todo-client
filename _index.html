@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Todos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/wingcss/0.1.8/wing.min.css"/>
+    <!-- Load AngularJS -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script type="text/javascript">
+      var app = angular.module("TaskManagement", []);
+
+      //Controller Part
+      app.controller("TaskManagementController", function ($scope, $http) {
+
+        //Initialize page with default data which is blank in this example
+        $scope.tasks = [];
+
+        $scope.form = {
+          description: ""
+        };
+
+        //Now load the data from server
+        _refreshPageData();
+
+        //HTTP POST methods for add tasks
+        $scope.add = function () {
+          var data = { "description": $scope.form.description };
+
+          $http({
+            method: "POST",
+            url: 'http://localhost:8088/todo/tasks',
+            data: angular.toJson(data),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }).then(_success, _error);
+        };
+
+        /* Private Methods */
+        //HTTP GET- get all tasksokok collection
+        function _refreshPageData() {
+          $http({
+            method: 'GET',
+            url: 'http://localhost:8088//todo/tasks'
+          }).then(function successCallback(response) {
+            $scope.tasks = response.data;
+          }, function errorCallback(response) {
+            console.log(response.statusText);
+          });
+        }
+
+        function _success(response) {
+          _refreshPageData();
+          _clearForm();
+        }
+
+        function _error(response) {
+          alert(response.data.message || response.statusText);
+        }
+
+        //Clear the form
+        function _clearForm() {
+          $scope.form.description = "";
+        }
+      });
+    </script>
+</head>
+<body ng-app="TaskManagement" ng-controller="TaskManagementController">
+
+<div class="container">
+    <h1>TODOs</h1>
+
+    <h3>Add a task</h3>
+    <form ng-submit="add()">
+        <div class="row">
+            <div class="col-6"><input type="text" placeholder="Description" ng-model="form.description" size="60"/></div><div><input type="submit" value="Save"/></div>
+        </div>
+    </form>
+
+    <h3>Task list</h3>
+    
+    <div class="row" ng-repeat="task in tasks">
+        <!--<div class="col-1">{{ task.id }}</div>-->
+        <div class="col-1"><input type="checkbox"/></div>
+        <div class="col-8">{{ task.description }}</div>
+    </div>
+</div>
+
+</body>
+</html>
