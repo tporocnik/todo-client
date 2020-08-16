@@ -11,7 +11,6 @@ export default class TaskList extends HTMLElement {
   connectedCallback() {
     this.loadTasks();
     this.addEventListener("taskAdded", e => this.loadTasks);
-   
   }
 
   template(){
@@ -20,7 +19,7 @@ export default class TaskList extends HTMLElement {
       <h3>Task list</h3>
       ${this.tasks.map(element => html`
         <div class="row" >
-        <div class="col-1"><input type="checkbox" @click=${()=>{this.deleteTask(element.id)}} value="${element.id}"/></div>
+        <div class="col-1"><input type="checkbox" @click=${()=>{this.deleteTask(element.id)}}/></div>
         <div class="col-8">${element.description}</div>
         </div>
       `)}
@@ -28,14 +27,12 @@ export default class TaskList extends HTMLElement {
   }
 
   deleteTask(id){
-     console.log("Delete task with id " + id);
      const url = 'http://localhost:8088//todo/tasks/'+ id;
 
     fetch(url, {
          method: "delete"
         }
     ).then( (response) => { 
-      console.log("Done...");
       this.loadTasks();
     });
   } 
@@ -44,13 +41,8 @@ export default class TaskList extends HTMLElement {
     const url = 'http://localhost:8088//todo/tasks';
     const result = await fetch(url);
     this.tasks = await result.json();
-    console.log(this.tasks);
-    
+   
     render(this.template(), this.shadowRoot, {eventContext: this});
-    
-    //this.querySelectorAll("input[type=checkbox]").forEach(cb => {
-    // cb.addEventListener("click", e => this.deleteTask(cb.value));;
-    //})
   }
 }
 

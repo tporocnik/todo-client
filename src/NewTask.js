@@ -8,8 +8,7 @@ export default class NewTask extends HTMLElement {
   }
 
   connectedCallback() {
-    console.log("Connect");
-    this.innerHTML = render(this.template(), this.shadowRoot, {eventContext: this});
+    render(this.template(), this.shadowRoot, {eventContext: this});
   }
 
   template(){
@@ -26,14 +25,9 @@ export default class NewTask extends HTMLElement {
   }
 
   addTask(){
-    console.log("Starting addTask");
     const url = 'http://localhost:8088//todo/tasks';
 
     let description = this.shadowRoot.getElementById("description").value;
-    console.log(`Button clicked with ${description}...`);
-    console.log(JSON.stringify({
-      description
-    }));
     fetch(url, {
          method: "post",
          headers: {
@@ -45,7 +39,6 @@ export default class NewTask extends HTMLElement {
         description
       })
     }).then( (response) => { 
-      console.log("Done...");
       const taskAddedEvent = new CustomEvent('taskAdded',{detail:{}, bubbles: true});
       window.dispatchEvent(taskAddedEvent);
     });
